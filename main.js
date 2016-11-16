@@ -24,22 +24,27 @@
 
 var client = null;
 
-var credentials = {
-  client_id: "28505185345-nbiquo6g7mm4ofu1cof2edfrfq8p2sk7.apps.googleusercontent.com",
-  scope: "https://www.googleapis.com/auth/musicmanager",
-  redirect_uri: "https://play.google.com/music/listen",
+var oauth2Client = new google.auth.OAuth2(
+  "652850857958.apps.googleusercontent.com",
+  "ji1rklciNp2bfsFJnEH_i6al",
+  "urn:ietf:wg:oauth:2.0:oob"
+);
+
+var authOpts = {
+  access_type: "offline",
+  scope: "https://www.googleapis.com/auth/musicmanager"
 };
 
-GOAuth2.authorize(credentials, function (err, response) {
-  if (err) {
-    console.error(err);
+browser.storage.local.get(["access_token", "refresh_token"]).then(function (arr) {
+  var tokens = arr[0];
+  if (!tokens.access_token || !tokens.refresh_token)
     return;
-  }
+  oauth2Client.setCredentials(tokens);
   client = new google.musicmanager.Client(
     document.querySelector("[href^='https://accounts.google.com']").textContent,
-    response.access_token
+    tokens.access_token
   );
-});
+}).catch(console.error);
 
 /* DOM manipulation */
 
@@ -131,7 +136,7 @@ uploadDialog.querySelector("img").ondrop = uploadFiles;
 uploadDialog.querySelector("input").onchange = uploadFiles;
 
 var errorMessage = JXON.unbuild({
-  "@href": GOAuth2.getAuthUrl(credentials), "keyValue":
+  "@href": oauth2Client.generateAuthUrl(authOpts), "keyValue":
   "You don't appear to have authorized Google Play Music Uploader "+
   "with your Google account. Please click here to do so."
 }, "http://www.w3.org/1999/xhtml", "a").documentElement;
@@ -218,11 +223,12 @@ function uploadFiles(e) {
 
 function errorHandler(err, resume) {
   if (err.statusText === "Unauthorized" || err.auth_status === 16) {
-    GOAuth2.authorize(credentials, (function (err, response) {
+    oauth2Client.refreshAccessToken((function (err, tokens) {
       if (err) {
         console.error(err);
       } else {
-        this.token = client.token = response.access_token;
+        this.token = client.token = tokens.access_token;
+        browser.storage.local.set(tokens);
         resume();
       }
     }).bind(this));

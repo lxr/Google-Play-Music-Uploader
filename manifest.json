@@ -6,8 +6,8 @@
   "description": "Transforms the Upload music page on Google Play Music into a real upload form.",
 
   "permissions": [
-    "https://accounts.google.com/o/oauth2/auth",
-    "https://www.googleapis.com/oauth2/v1/tokeninfo",
+    "storage",
+    "https://accounts.google.com/o/oauth2/*",
     "https://play.google.com/music/listen*",
     "https://android.clients.google.com/upsj/*",
     "https://uploadsj.clients.google.com/uploadsj/rupio"
