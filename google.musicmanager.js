@@ -1,6 +1,6 @@
 /*!
 
-Copyright (c) 2014-5 Lari Rasku <lari.o.rasku@gmail.com>
+Copyright (c) 2014-6 Lari Rasku <lari.o.rasku@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the
@@ -5346,8 +5346,7 @@ this.google.musicmanager = new (function () {
       var image = null;
       var track = {
         estimated_size: file.size,
-        last_modified_timestamp:
-          Math.round(file.lastModifiedDate.getTime() / 1000),
+        last_modified_timestamp: Math.round(file.lastModified / 1000),
         title: file.name,
         original_bit_rate: 0,
         content_type: android.Track.ContentType.MP3,
