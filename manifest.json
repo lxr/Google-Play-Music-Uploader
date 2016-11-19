@@ -25,8 +25,13 @@
         "ByteBufferAB.min.js",
         "ProtoBuf.noparse.min.js",
         "google.musicmanager.js",
+        "credentials.js",
         "main.js"
       ]
     }
-  ]
+  ],
+
+  "options_ui": {
+    "page": "options.html"
+  }
 }
