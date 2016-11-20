@@ -40,93 +40,51 @@ browser.storage.local.get(["access_token", "refresh_token"]).then(function (arr)
 new MutationObserver(function () {
   var view = document.querySelector(".upload-music-view");
   if (!view) return;
-  view.className = "playlist-view g-content view-transition";
+  view.className = "g-content view-transition";
   view.innerHTML = "";
   view.appendChild(client ? uploadDialog : errorMessage);
 }).observe(document.querySelector("#music-content"), { childList: true });
 
 var uploadDialog = JXON.unbuild({
   "@id": "uploadDialog",
-  "@class": "cover",
 
-  "style": "\
-    .playlist-view div {\
-      font-size: 14px;\
-      color: #BBB;\
-    }\
-    .song-table td {\
-      line-height: 40px;\
-      white-space: nowrap;\
-      overflow: hidden;\
-      cursor: auto;\
-      border-bottom: 1px solid #D9D9D9;\
-      color: #707070;\
-      font-size: 14px;\
-      text-indent: 8px;\
-    }\
-  ",
+  "h2": {
+    "@class": "section-header",
+    "keyValue": "Drag songs below to start uploading."
+  },
 
-  "div": [
-    { "img": {
-      "@class": "card",
-      "@src": "https://play.google.com/music/default_album_art_big_card.png",
-      "@ondragover": "return false",
-      "@ondragleave": "return false"
-    } },
+  "div": {
+    "@class": "songlist-container material-shadow-z1",
+    "@ondragover": "return false",
+    "@ondragleave": "return false",
 
-    "To upload songs, drop files above the box on the left, "+
-    "or use the button below.",
-
-    "Do not leave Google Play Music while uploading. "+
-    "(This menu is safe to leave.)",
-
-    {
-      "@class": "description", "keyValue":
-      "This pseudo-playlist tracks the current session's upload attemps."
-    },
-
-    { "button": {
-      "@class": "button actions",
-      "@style": "display: block",
-      "@onclick": "this.querySelector('input').click()",
-
-      "keyValue": "Select files from your computer",
-      "input": {
-        "@type": "file",
-        "@multiple": true,
-        "@hidden": true
-      },
-    } },
-
-    { "@style": "clear: both" },
-
-    { "table": {
+    "table": {
       "@class": "song-table",
 
       "thead": { "tr": {
         "@class": "header-row",
 
         "th": [
-          { "@data-col": "title",      "keyValue": "Name" },
-          { "@data-col": "duration",   "@title":   "Duration",
-            "div": { "@class": "icon", "@alt":     "Duration" }
-          },
-          { "@data-col": "artist",     "keyValue": "Artist" },
-          { "@data-col": "album",      "keyValue": "Album" },
-          { "@data-col": "date-added", "keyValue": "Status" },
+          { "@data-col": "title",        "keyValue": "Name" },
+          { "@data-col": "duration",     "@title":   "Duration",
+            "iron-icon": { "@class": "x-scope iron-icon-1", "@icon": "device:access-time", "@alt": "Duration" } },
+          { "@data-col": "artist",       "keyValue": "Artist" },
+          { "@data-col": "album",        "keyValue": "Album" },
+          { "@data-col": "date-deleted", "keyValue": "Status" },
         ]
       } },
 
       "tbody": {}
-    } }
-  ]
+    }
+  }
 }, "http://www.w3.org/1999/xhtml", "div").documentElement;
-uploadDialog.querySelector("img").ondrop = uploadFiles;
-uploadDialog.querySelector("input").onchange = uploadFiles;
+uploadDialog.querySelector("div").ondrop = uploadFiles;
 
-var errorMessage = JXON.unbuild({ "keyValue":
-  `You don't appear to have authorized ${extension.name} `+
-  "with your Google Account. Please navigate to the options page to do so."
+var errorMessage = JXON.unbuild({
+  "@class": "settings-card material-shadow-z1",
+  "keyValue": `You don't appear to have authorized ${extension.name} `+
+              "with your Google Account. Please navigate to the options "+
+              "page to do so."
 }, "http://www.w3.org/1999/xhtml", "div").documentElement;
 
 /* script body */
@@ -141,20 +99,24 @@ function uploadFiles(e) {
   e.preventDefault();
 
   fileList.forEach(function (file) {
-    var tr = JXON.unbuild({ "td": [
-      { "@data-col": "title", "keyValue": file.name },
-      { "@data-col": "duration", "keyValue": formatSize(file.size) },
-      { "@data-col": "artist" },
-      { "@data-col": "album" },
-      { "@data-col": "date-added" }
-    ] }, "http://www.w3.org/1999/xhtml", "tr").documentElement;
+    var tr = JXON.unbuild({
+      "@class": "song-row",
+
+      "td": [
+        { "@data-col": "title", "span": { "@class": "column-content", "keyValue": file.name } },
+        { "@data-col": "duration", "span": { "keyValue": formatSize(file.size) } },
+        { "@data-col": "artist", "span": { "@class": "column-content" } },
+        { "@data-col": "album", "span": { "@class": "column-content" } },
+        { "@data-col": "date-deleted" }
+      ]
+    }, "http://www.w3.org/1999/xhtml", "tr").documentElement;
     tbody.insertBefore(tr, tbody.firstChild);
     file.row = {
-      title:    tr.querySelector("[data-col=title]"),
-      duration: tr.querySelector("[data-col=duration]"),
-      artist:   tr.querySelector("[data-col=artist]"),
-      album:    tr.querySelector("[data-col=album]"),
-      status:   tr.querySelector("[data-col=date-added]"),
+      title:    tr.querySelector("[data-col=title] > .column-content"),
+      duration: tr.querySelector("[data-col=duration] > span"),
+      artist:   tr.querySelector("[data-col=artist] > .column-content"),
+      album:    tr.querySelector("[data-col=album] > .column-content"),
+      status:   tr.querySelector("[data-col=date-deleted]"),
     };
   });
 
@@ -167,7 +129,7 @@ function uploadFiles(e) {
   upload.on("metadata-end", function (file, metadata, image) {
     var row = file.row;
     var img = document.createElement("img");
-    img.src = "https://play.google.com/music/default_album_art_song_row.png";
+    img.src = "https://play.google.com/music/default_album.svg";
     console.log(metadata);
     if (metadata.title) {
       row.title.textContent = metadata.title;
