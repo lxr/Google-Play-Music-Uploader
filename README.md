@@ -16,7 +16,7 @@ Clone the repository to your computer and use your browser's load
 unpacked extension feature, or package it yourself.
 
 You must authorize Google Play Music Uploader with your Google
-account in order to use it.  This can be done on the extension's
+Account in order to use it.  This can be done on the extension's
 options page.
 
 # Bugs

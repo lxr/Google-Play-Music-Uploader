@@ -126,7 +126,7 @@ uploadDialog.querySelector("input").onchange = uploadFiles;
 
 var errorMessage = JXON.unbuild({ "keyValue":
   `You don't appear to have authorized ${extension.name} `+
-  "with your Google account. Please navigate to the options page to do so."
+  "with your Google Account. Please navigate to the options page to do so."
 }, "http://www.w3.org/1999/xhtml", "div").documentElement;
 
 /* script body */

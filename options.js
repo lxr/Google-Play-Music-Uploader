@@ -10,7 +10,7 @@ authForm.action = "#";
 
 var authButton = document.createElement("input");
 authButton.type = "button";
-authButton.value = `Authorize ${extension.name} with your Google account`;
+authButton.value = `Authorize ${extension.name} with your Google Account`;
 
 var authInput = document.createElement("input");
 authInput.type = "text";
