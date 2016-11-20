@@ -125,7 +125,7 @@ uploadDialog.querySelector("img").ondrop = uploadFiles;
 uploadDialog.querySelector("input").onchange = uploadFiles;
 
 var errorMessage = JXON.unbuild({ "keyValue":
-  "You don't appear to have authorized Google Play Music Uploader "+
+  `You don't appear to have authorized ${extension.name} `+
   "with your Google account. Please navigate to the options page to do so."
 }, "http://www.w3.org/1999/xhtml", "div").documentElement;
 
@@ -221,7 +221,7 @@ function errorHandler(err, resume) {
       }
     }).bind(this));
   } else if (err.statusText === "Forbidden") {
-    var register = client.register("Google Play Music Uploader");
+    var register = client.register(extension.name);
     register.on("error", console.error);
     register.on("end", resume);
     register.start();

@@ -3,3 +3,4 @@ var oauth2Client = new google.auth.OAuth2(
   "ji1rklciNp2bfsFJnEH_i6al",
   "urn:ietf:wg:oauth:2.0:oob"
 );
+var extension = browser.runtime.getManifest();

@@ -10,7 +10,7 @@ authForm.action = "#";
 
 var authButton = document.createElement("input");
 authButton.type = "button";
-authButton.value = "Authorize Google Play Music Uploader with your Google account";
+authButton.value = `Authorize ${extension.name} with your Google account`;
 
 var authInput = document.createElement("input");
 authInput.type = "text";
@@ -21,7 +21,7 @@ authSubmit.type = "submit";
 
 browser.storage.local.get("refresh_token").then(function (tokens) {
   if (tokens.refresh_token) {
-    authForm.textContent = "Google Play Music Uploader is authorized.";
+    authForm.textContent = `${extension.name} is authorized.`;
     return;
   }
   authForm.innerHTML = "";
@@ -54,7 +54,7 @@ authSubmit.onclick = function () {
       console.error(tokens);
       return;
     }
-    authForm.textContent = "Successfully authorized Google Play Music Uploader.";
+    authForm.textContent = `Successfully authorized ${extension.name}.`;
     browser.storage.local.set(tokens);
   });
 };
