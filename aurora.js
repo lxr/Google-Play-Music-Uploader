@@ -603,7 +603,7 @@ AVBuffer = (function() {
 
   function AVBuffer(input) {
     var _ref;
-    if (input instanceof Uint8Array) {
+    if (input instanceof Uint8Array || input instanceof window.Uint8Array) {
       this.data = input;
     } else if (input instanceof ArrayBuffer || Array.isArray(input) || typeof input === 'number' || ((_ref = global.Buffer) != null ? _ref.isBuffer(input) : void 0)) {
       this.data = new Uint8Array(input);
@@ -3677,7 +3677,7 @@ FileSource = (function(_super) {
     this.reader.onload = (function(_this) {
       return function(e) {
         var buf;
-        buf = new AVBuffer(new Uint8Array(e.target.result));
+        buf = new AVBuffer(new window.Uint8Array(e.target.result));
         _this.offset += buf.length;
         _this.emit('data', buf);
         _this.active = false;
