@@ -1,5 +1,46 @@
 <!DOCTYPE html>
-<form id="auth">Checking if extension is authorized...</form>
+<style>
+input, button { box-sizing: border-box; }
+form { display: table; border-spacing: 1ch 0; }
+form > p { display: table-row; }
+form > p > * { display: table-cell; }
+form > p > :first-child { text-align: right; }
+form > p > button:first-child { width: 100%; text-align: center; }
+</style>
+<form id="auth" action="#">
+<p>
+	<label for="code">Authorization code</label>
+	<input id="code" type="button" disabled minlength=1 value="Checking if extension is authorized..." title="
+		Use of this extension requires authorizing it with your
+		Google Account. This requires obtaining an authorization
+		code from a special Google authorization page where you
+		grant the extension access to your Google Play Music
+		library. Once the code has been provided, saving the
+		extension settings exchanges it for the proper access
+		and refresh tokens, finalizing the authorization
+		process. If installed on multiple browsers, this must
+		be done once for each.
+	">
+</p>
+<p>
+	<label for="id">Device ID</label>
+	<input id="id" type="text" minlength=1 title="
+		The device ID is a string by which the Google servers
+		identify a Google Play Music client. (This is distinct
+		from the device name, which is listed on the Google Play
+		Music Settings page.) If you have Google Play Music
+		Uploader installed on several browsers, use the same
+		ID for each, so as not to pointlessly use up your
+		account's device quota. The string can be anything
+		reasonably unique on Google's side; for example, your
+		Google Account's e-mail address.
+	">
+</p>
+<p>
+	<button>Save</button>
+	<strong></strong>
+</p>
+</form>
 <script src=google-oauth2.js></script>
 <script src=credentials.js></script>
 <script src=options.js></script>

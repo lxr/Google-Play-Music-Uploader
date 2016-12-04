@@ -6,55 +6,78 @@ var authType = {
 };
 
 var authForm = document.querySelector("#auth");
-authForm.action = "#";
+var codeInput = authForm.querySelector("#code");
+var idInput = authForm.querySelector("#id");
+var saveButton = authForm.querySelector("button");
+var statusText = authForm.querySelector("strong");
 
-var authButton = document.createElement("input");
-authButton.type = "button";
-authButton.value = `Authorize ${extension.name} with your Google Account`;
+// Browsers don't apparently strip leading/trailing tabs or line breaks
+// from title fields, so we need to do so ourselves to make the tooltips
+// look less funny.
+codeInput.title = codeInput.title.replace(/\n\t+/g, "\n").substr(1);
+idInput.title = idInput.title.replace(/\n\t+/g, "\n").substr(1);
 
-var authInput = document.createElement("input");
-authInput.type = "text";
-authInput.placeholder = "Copy the authorization code here";
-
-var authSubmit = document.createElement("input");
-authSubmit.type = "submit";
-
-browser.storage.local.get("refresh_token").then(function (tokens) {
-  if (tokens.refresh_token) {
-    authForm.textContent = `${extension.name} is authorized.`;
+browser.storage.local.get().then(function (opts) {
+  idInput.value = opts.uploader_id;
+  if (opts.refresh_token) {
+    codeInput.value = `${extension.name} is authorized.`;
     return;
   }
-  authForm.innerHTML = "";
-  authForm.appendChild(authButton);
+  codeInput.disabled = false;
+  codeInput.value = "Click here to begin the authorization process";
+  codeInput.onclick = function (e) {
+    window.open(oauth2Client.generateAuthUrl(authType), "auth-window");
+    codeInput.onclick = null;
+    codeInput.type = "text";
+    codeInput.value = "Copy the authorization code here..."
+  };
 }).catch(function (err) {
-  authForm.textContent = "Could not check local storage for access tokens."+
-                         "See the console for details.";
+  codeInput.value = "Error checking local storage for access tokens.";
+  statusText.textContent =  "See the console for details.";
   console.error(err);
 });
 
-authButton.onclick = function (e) {
-  window.open(oauth2Client.generateAuthUrl(authType), "auth-window");
-  authForm.removeChild(authButton);
-  authForm.appendChild(authInput);
-  authForm.appendChild(authSubmit);
-};
+function saveSuccess() {
+  statusText.textContent = "Settings saved!";
+  saveButton.disabled = false;
+  saveButton.value = "Save";
+}
 
-authSubmit.onclick = function () {
-  var code = authInput.value;
-  oauth2Client.getToken(code, function (err, tokens) {
-    if (err) {
-      authForm.textContent = "Network error when exchanging authorization code."+
-                             "See the console for details.";
-      console.error(err);
-      return;
-    }
-    if (tokens.error) {
-      authForm.textContent = "Error exchanging authorization code. "+
-                             "See the console for details.";
-      console.error(tokens);
-      return;
-    }
-    authForm.textContent = `Successfully authorized ${extension.name}.`;
-    browser.storage.local.set(tokens);
-  });
+function saveError(msg, err) {
+  statusText.textContent = msg + " See the console for details.";
+  console.error(err);
+  saveButton.disabled = false;
+  saveButton.value = "Save";
+}
+
+saveButton.onclick = function () {
+  if (!idInput.value) {
+    statusText.textContent = "Device ID cannot be empty.";
+    return;
+  }
+  saveButton.disabled = true;
+  saveButton.value = "Saving...";
+  if (codeInput.type === "text") {
+    var code = codeInput.value;
+    oauth2Client.getToken(code, function (err, tokens) {
+      if (err) {
+        saveError("Network error when exchanging authorization code.", err);
+        return;
+      }
+      if (tokens.error) {
+        saveError("Error exchanging authorization code.", tokens);
+        return;
+      }
+      codeInput.value = `Successfully authorized ${extension.name}.`;
+      codeInput.disabled = true;
+      tokens.uploader_id = idInput.value;
+      browser.storage.local.set(tokens)
+        .then(saveSuccess)
+        .catch(saveError.bind(null, "Error saving settings."));
+    });
+  } else {
+    browser.storage.local.set({ uploader_id: idInput.value })
+      .then(saveSuccess)
+      .catch(saveError.bind(null, "Error saving settings."));
+  }
 };

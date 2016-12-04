@@ -24,15 +24,12 @@
 
 var client = null;
 
-browser.storage.local.get(["access_token", "refresh_token"]).then(function (arr) {
-  var tokens = arr[0];
-  if (!tokens.access_token || !tokens.refresh_token)
+browser.storage.local.get().then(function (arr) {
+  var opts = arr[0];
+  if (!opts.access_token || !opts.refresh_token || !opts.uploader_id)
     return;
-  oauth2Client.setCredentials(tokens);
-  client = new google.musicmanager.Client(
-    document.querySelector("[href^='https://accounts.google.com']").textContent,
-    tokens.access_token
-  );
+  oauth2Client.setCredentials(opts);
+  client = new google.musicmanager.Client(opts.uploader_id, opts.access_token);
 }).catch(console.error);
 
 /* DOM manipulation */
@@ -83,8 +80,8 @@ uploadDialog.querySelector("div").ondrop = uploadFiles;
 var errorMessage = JXON.unbuild({
   "@class": "settings-card material-shadow-z1",
   "keyValue": `You don't appear to have authorized ${extension.name} `+
-              "with your Google Account. Please navigate to the options "+
-              "page to do so."
+              "with your Google Account or given it a device ID. "+
+              "Please go to the options page to do so."
 }, "http://www.w3.org/1999/xhtml", "div").documentElement;
 
 /* script body */
