@@ -17,14 +17,14 @@
     {
       "matches": ["https://play.google.com/music/listen*"],
       "js": [
-        "google-oauth2.js",
-        "aurora.js",
-        "mp3.js",
-        "index.js",
-        "Long.min.js",
-        "ByteBufferAB.min.js",
-        "ProtoBuf.noparse.min.js",
-        "google.musicmanager.js",
+        "vendor/google-oauth2.js",
+        "vendor/aurora.js",
+        "vendor/mp3.js",
+        "vendor/index.js",
+        "vendor/Long.min.js",
+        "vendor/ByteBufferAB.min.js",
+        "vendor/ProtoBuf.noparse.min.js",
+        "vendor/google.musicmanager.js",
         "credentials.js",
         "main.js"
       ]
