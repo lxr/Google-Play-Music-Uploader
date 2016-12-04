@@ -4,6 +4,9 @@
   "version": "0.0.0",
 
   "description": "Transforms the Upload music page on Google Play Music into a real upload form.",
+  "icons": {
+    "24": "icon.png"
+  },
 
   "permissions": [
     "storage",
