@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Google Play Music Uploader",
-  "version": "0.0.0",
+  "version": "1.0.0",
 
   "description": "Transforms the Upload music page on Google Play Music into a real upload form.",
   "icons": {
